@@ -1,8 +1,7 @@
-from PyQt6.QtGui import QPalette, QFontMetrics
+import sys
+
 from PyQt6.QtWidgets import (QWidget, QPushButton, QApplication,
                              QGridLayout, QButtonGroup, QLabel, QSizePolicy)
-from PyQt6.QtCore import Qt
-import sys
 
 displayString = ''
 prevAns = ''
