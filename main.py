@@ -1,4 +1,6 @@
 import sys
+import math
+import re
 
 from PyQt6.QtWidgets import (QWidget, QPushButton, QApplication,
                              QGridLayout, QButtonGroup, QLabel, QSizePolicy)
@@ -6,10 +8,10 @@ from PyQt6.QtWidgets import (QWidget, QPushButton, QApplication,
 displayString = ''
 prevAns = ''
 buttonGroup = QButtonGroup()
-buttonList = ['7', '8', '9', ' * ', ' ** ',
-              '4', '5', '6', ' / ', ' // ',
-              '1', '2', '3', ' + ', 'del',
-              ' = ', '0', '.', ' - ', 'ans']
+buttonList = ['7', '8', '9', ' * ', ' ** ', '(',
+              '4', '5', '6', ' / ', ' // ', ')',
+              '1', '2', '3', ' + ', 'del', 'no',
+              ' = ', '0', '.', ' - ', 'ans' ,'no']
 
 op = {'+': lambda x, y: x + y,
       '-': lambda x, y: x - y,
@@ -21,7 +23,13 @@ op = {'+': lambda x, y: x + y,
 
 
 def calculate(string):
+    if string == True:
+        string = string[0][1:-2]
+    elif string == False:
+        return string
+        
     global prevAns
+    re.sub(r'\\((.*)\\)', calculate, string)
     string = string.split()
     if len(string) % 2 == 0:
         return "Syntax Error"
@@ -67,7 +75,7 @@ class Window(QWidget):
 
         grid = QGridLayout()
 
-        grid.addWidget(self.display, 0, 0, 1, 5)
+        grid.addWidget(self.display, 0, 0, 1, 6)
 
         x = 0
         y = 1
@@ -79,7 +87,7 @@ class Window(QWidget):
             grid.addWidget(button, y, x)
 
             x += 1
-            if x >= 5:
+            if x >= 6:
                 x = 0
                 y += 1
 
