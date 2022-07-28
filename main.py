@@ -12,7 +12,7 @@ buttonGroup = QButtonGroup()
 # Visual for GUI, used to create buttons (left to right)
 buttonList = ['7', '8', '9', ' * ', ' ** ', '(',
               '4', '5', '6', ' / ', ' // ', ')',
-              '1', '2', '3', ' + ', 'del', 'no',
+              '1', '2', '3', ' + ', 'del', '! ',
               ' = ', '0', '.', ' - ', 'ans', 'no']
 # Set up lambdas for each operation to be called in line
 op = {'+': lambda x, y: x + y,
@@ -24,26 +24,33 @@ op = {'+': lambda x, y: x + y,
       }
 
 
-def handleMatch(matchObject):
+def handleBrackets(matchObject):
+    print(matchObject[0])
     return calculate(matchObject[0][1:-1])  # Return bracket replacement
 
 
-def calculate(string):
+def handleFactorial(matchObject):
+    return str(math.factorial((int(matchObject[0][:-2]))))
+
+
+def calculate(equation):
     global prevAns
-    string = re.sub(r'\((.*)\)', handleMatch, string)  # Replaces any brackets with the sum contained within
-    string = string.split()
-    if len(string) % 2 == 0:  # Only allows complete expressions (which have to have an odd amount of terms)
+    equation = re.sub(r'.+! ', handleFactorial, equation)  # Replaces any factorials with expected output
+    equation = re.sub(r'\((.+)\)', handleBrackets, equation)  # Replaces any brackets with expected output
+    equation = equation.split()
+    if len(equation) % 2 == 0 and len(equation) != 1:  # Only allows complete expressions (which have to have an odd amount of terms)
         return "Syntax Error"
-    while len(string) >= 3:  # Keeps calculating and replacing until only answer is left
+    while len(equation) >= 3:  # Keeps calculating and replacing until only answer is left
         try:
-            answer = op[string[1]](float(string[0]), float(string[2]))
+            print(equation)
+            answer = op[equation[1]](float(equation[0]), float(equation[2]))
         except ZeroDivisionError:
             return "Undefined"
-        string.pop(0)
-        string.pop(0)
-        string[0] = str(answer)
-    prevAns = string[0]  # Store for ans button
-    return string[0]
+        equation.pop(0)
+        equation.pop(0)
+        equation[0] = str(answer)
+    prevAns = equation[0]  # Store for ans button
+    return equation[0]
 
 
 def textEntered(called):
@@ -51,7 +58,7 @@ def textEntered(called):
     character = buttonList[buttonGroup.id(called)]  # Finds which button was pressed
     # Checking for special inputs
     if character == ' = ':
-        window.display.setText(calculate(displayString))
+        window.display.setText(displayString + ' = ' + calculate(displayString))
         displayString = ''
         return
     elif character == 'ans':
@@ -81,7 +88,8 @@ class Window(QWidget):
 
         x = 0
         y = 1  # Accounts for display
-        sizePolicy = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)  # Makes button scale vertically
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Minimum,
+                                 QSizePolicy.Policy.Minimum)  # Makes button scale vertically
         for index, character in enumerate(buttonList):  # Makes grid
             button = QPushButton(character, self)
             button.setSizePolicy(sizePolicy)
@@ -118,5 +126,4 @@ def main():
 
 
 if __name__ == '__main__':
-    # print(string)  # For testing specific equations
     main()
