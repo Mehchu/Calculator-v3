@@ -25,7 +25,6 @@ op = {'+': lambda x, y: x + y,
 
 
 def handleBrackets(matchObject):
-    print(matchObject[0])
     return calculate(matchObject[0][1:-1])  # Return bracket replacement
 
 
