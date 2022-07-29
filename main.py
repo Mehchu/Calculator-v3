@@ -91,30 +91,34 @@ class Window(QWidget):
         super().__init__()
         self.display = QLabel(self)
         self.display.setStyleSheet("background-color: lightgray;border: 1px solid black")
+        self.sizePolicy = QSizePolicy(QSizePolicy.Policy.Minimum,
+                                      QSizePolicy.Policy.Minimum)
         # No clue what this does, somehow changes font size
         self.fontD = self.font()
         self.fontD.setPointSize(20)
         self.display.setFont(self.fontD)
+
         self.line = QLineEdit(self)
+        self.line.setSizePolicy(self.sizePolicy)
         self.populate()
+
 
     def populate(self):
         grid = QGridLayout()
         grid.addWidget(self.display, 0, 0, 1, 6)  # Last should be changed to match # of columns
         grid.addWidget(self.line, 5, 0, 1, 5)
         textButton = QPushButton('Enter', self)
-        sizePolicy = QSizePolicy(QSizePolicy.Policy.Minimum,
-                                 QSizePolicy.Policy.Minimum)  # Makes button scale vertically
+        # Makes button scale vertically
 
         textButton.clicked.connect(textUpdateDisplay)
-        textButton.setSizePolicy(sizePolicy)
+        textButton.setSizePolicy(self.sizePolicy)
         grid.addWidget(textButton, 5, 5, 1, 1)
         x = 0
         y = 1  # Accounts for display
 
         for index, character in enumerate(buttonList):  # Makes grid
             button = QPushButton(character, self)
-            button.setSizePolicy(sizePolicy)
+            button.setSizePolicy(self.sizePolicy)
             buttonGroup.addButton(button, index)
             grid.addWidget(button, y, x)
 
