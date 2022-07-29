@@ -1,6 +1,5 @@
 import sys
 import math
-import regex
 import re
 from PyQt6.QtWidgets import (QWidget, QPushButton, QApplication,
                              QGridLayout, QButtonGroup, QLabel, QSizePolicy, QLineEdit)
@@ -34,24 +33,23 @@ def handleBrackets(equation):
             equation = equation.replace(equation[opening:closing + 1],
                                         calculate(equation[opening + 1:closing]))
     return equation
-    # return str(calculate(matchObject[0][1:-1]))  # Return bracket replacement
 
 
 def handleFactorial(matchObject):
-    return str(math.factorial(int(matchObject[0][:-2])))
+    print(matchObject[0][:-2])
+    return str(math.factorial(int(matchObject[0][:-1])))
 
 
 def handleSqrt(matchObject):
-    return str(math.sqrt(int(matchObject[0][4:])))
+    return str(math.sqrt(float(calculate(matchObject[0][4:]))))
 
 
 def calculate(equation):
     global prevAns
 
     equation = handleBrackets(equation)
-    # equation = regex.sub(r'(\((.+)\))', handleBrackets, equation)  # Replaces any brackets with expected output
-    equation = regex.sub(r'.+! ', handleFactorial, equation)  # Replaces any factorials with expected output
-    equation = regex.sub(r'sqrt.+', handleSqrt, equation)  # Replaces any sqrts with expected output
+    equation = re.sub(r'.+!', handleFactorial, equation)  # Replaces any factorials with expected output
+    equation = re.sub(r'sqrt.+', handleSqrt, equation)  # Replaces any sqrts with expected output
     equation = equation.split()
     if len(equation) % 2 == 0 and len(
             equation) != 1:  # Only allows complete expressions (which have to have an odd amount of terms)
