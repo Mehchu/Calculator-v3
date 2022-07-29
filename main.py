@@ -12,8 +12,8 @@ buttonGroup = QButtonGroup()
 # Visual for GUI, used to create buttons (left to right)
 buttonList = ['7', '8', '9', ' * ', ' ** ', '(',
               '4', '5', '6', ' / ', ' // ', ')',
-              '1', '2', '3', ' + ', 'del', '! ',
-              ' = ', '0', '.', ' - ', 'ans', 'no']
+              '1', '2', '3', ' + ', 'del', '!',
+              ' = ', '0', '.', ' - ', 'ans', 'sqrt(']
 # Set up lambdas for each operation to be called in line
 op = {'+': lambda x, y: x + y,
       '-': lambda x, y: x - y,
@@ -25,20 +25,26 @@ op = {'+': lambda x, y: x + y,
 
 
 def handleBrackets(matchObject):
-    print(matchObject[0])
-    return calculate(matchObject[0][1:-1])  # Return bracket replacement
+    return str(calculate(matchObject[0][1:-1]))  # Return bracket replacement
 
 
 def handleFactorial(matchObject):
-    return str(math.factorial((int(matchObject[0][:-2]))))
+    return str(math.factorial(int(matchObject[0][:-2])))
+
+
+def handleSqrt(matchObject):
+    return str(math.sqrt(int(matchObject[0][4:])))
 
 
 def calculate(equation):
     global prevAns
-    equation = re.sub(r'.+! ', handleFactorial, equation)  # Replaces any factorials with expected output
+
     equation = re.sub(r'\((.+)\)', handleBrackets, equation)  # Replaces any brackets with expected output
+    equation = re.sub(r'.+! ', handleFactorial, equation)  # Replaces any factorials with expected output
+    equation = re.sub(r'sqrt.+', handleSqrt, equation)  # Replaces any sqrts with expected output
     equation = equation.split()
-    if len(equation) % 2 == 0 and len(equation) != 1:  # Only allows complete expressions (which have to have an odd amount of terms)
+    if len(equation) % 2 == 0 and len(
+            equation) != 1:  # Only allows complete expressions (which have to have an odd amount of terms)
         return "Syntax Error"
     while len(equation) >= 3:  # Keeps calculating and replacing until only answer is left
         try:
