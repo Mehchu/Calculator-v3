@@ -1,9 +1,9 @@
 import sys
 import math
+import regex
 import re
-
 from PyQt6.QtWidgets import (QWidget, QPushButton, QApplication,
-                             QGridLayout, QButtonGroup, QLabel, QSizePolicy)
+                             QGridLayout, QButtonGroup, QLabel, QSizePolicy, QLineEdit)
 
 displayString = ''
 prevAns = ''
@@ -24,8 +24,17 @@ op = {'+': lambda x, y: x + y,
       }
 
 
-def handleBrackets(matchObject):
-    return str(calculate(matchObject[0][1:-1]))  # Return bracket replacement
+def handleBrackets(equation):
+    opening = equation.find('(')
+    closing = equation.find(')')
+    while opening != -1 and closing != -1:
+        opening = equation.find('(')
+        closing = equation.find(')')
+        if opening != -1 and closing != -1:
+            equation = equation.replace(equation[opening:closing + 1],
+                                        calculate(equation[opening + 1:closing]))
+    return equation
+    # return str(calculate(matchObject[0][1:-1]))  # Return bracket replacement
 
 
 def handleFactorial(matchObject):
@@ -39,9 +48,10 @@ def handleSqrt(matchObject):
 def calculate(equation):
     global prevAns
 
-    equation = re.sub(r'\((.+)\)', handleBrackets, equation)  # Replaces any brackets with expected output
-    equation = re.sub(r'.+! ', handleFactorial, equation)  # Replaces any factorials with expected output
-    equation = re.sub(r'sqrt.+', handleSqrt, equation)  # Replaces any sqrts with expected output
+    equation = handleBrackets(equation)
+    # equation = regex.sub(r'(\((.+)\))', handleBrackets, equation)  # Replaces any brackets with expected output
+    equation = regex.sub(r'.+! ', handleFactorial, equation)  # Replaces any factorials with expected output
+    equation = regex.sub(r'sqrt.+', handleSqrt, equation)  # Replaces any sqrts with expected output
     equation = equation.split()
     if len(equation) % 2 == 0 and len(
             equation) != 1:  # Only allows complete expressions (which have to have an odd amount of terms)
@@ -51,6 +61,8 @@ def calculate(equation):
             answer = op[equation[1]](float(equation[0]), float(equation[2]))
         except ZeroDivisionError:
             return "Undefined"
+        except ValueError:
+            return "Syntax Error"
         equation.pop(0)
         equation.pop(0)
         equation[0] = str(answer)
@@ -85,16 +97,23 @@ class Window(QWidget):
         self.fontD = self.font()
         self.fontD.setPointSize(20)
         self.display.setFont(self.fontD)
+        self.line = QLineEdit(self)
         self.populate()
 
     def populate(self):
         grid = QGridLayout()
         grid.addWidget(self.display, 0, 0, 1, 6)  # Last should be changed to match # of columns
-
-        x = 0
-        y = 1  # Accounts for display
+        grid.addWidget(self.line, 5, 0, 1, 5)
+        textButton = QPushButton('Enter', self)
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Minimum,
                                  QSizePolicy.Policy.Minimum)  # Makes button scale vertically
+
+        textButton.clicked.connect(textUpdateDisplay)
+        textButton.setSizePolicy(sizePolicy)
+        grid.addWidget(textButton, 5, 5, 1, 1)
+        x = 0
+        y = 1  # Accounts for display
+
         for index, character in enumerate(buttonList):  # Makes grid
             button = QPushButton(character, self)
             button.setSizePolicy(sizePolicy)
@@ -121,6 +140,12 @@ class Window(QWidget):
         self.setWindowTitle('Calculator')
 
         self.show()
+
+
+def textUpdateDisplay():
+    global displayString
+    displayString = window.line.text()
+    window.display.setText(displayString)
 
 
 def main():
