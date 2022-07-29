@@ -48,7 +48,6 @@ def calculate(equation):
         return "Syntax Error"
     while len(equation) >= 3:  # Keeps calculating and replacing until only answer is left
         try:
-            print(equation)
             answer = op[equation[1]](float(equation[0]), float(equation[2]))
         except ZeroDivisionError:
             return "Undefined"
