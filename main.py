@@ -18,10 +18,10 @@ class Window(QWidget):
         self.buttonGroup = QButtonGroup()
 
         # Visual for GUI, used to create buttons (left to right)
-        self.buttonList = ['7', '8', '9', ' * ', ' ** ', '(',
-                           '4', '5', '6', ' / ', ' // ', ')',
-                           '1', '2', '3', ' + ', 'del', '!',
-                           ' = ', '0', '.', ' - ', 'ans', 'sqrt(']
+        self.buttonList = ['7', '8', '9', ' * ', ' ** ', '(', 'e ',
+                           '4', '5', '6', ' / ', ' // ', ')', 'π ',
+                           '1', '2', '3', ' + ', 'del', '!', 'sin(',
+                           ' = ', '0', '.', ' - ', 'ans', '√(', 'cos(']
         # Set up lambdas for each operation to be called in line
         self.op = {'+': lambda x, y: x + y,
                    '-': lambda x, y: x - y,
@@ -41,14 +41,14 @@ class Window(QWidget):
 
     def populate(self):
         grid = QGridLayout()
-        grid.addWidget(self.display, 0, 0, 1, 6)  # Last should be changed to match # of columns
-        grid.addWidget(self.line, 5, 0, 1, 5)
+        grid.addWidget(self.display, 0, 0, 1, 7)  # Last should be changed to match # of columns
+        grid.addWidget(self.line, 5, 0, 1, 6)
         textButton = QPushButton('Enter', self)
         # Makes button scale vertically
 
         textButton.clicked.connect(self.textUpdateDisplay)
         textButton.setSizePolicy(self.sizePolicy)
-        grid.addWidget(textButton, 5, 5, 1, 1)
+        grid.addWidget(textButton, 5, 6, 1, 1)
         x = 0
         y = 1  # Accounts for display
 
@@ -59,7 +59,7 @@ class Window(QWidget):
             grid.addWidget(button, y, x)
 
             x += 1
-            if x >= 6:  # Comparison should be changed to match # of columns
+            if x >= 7:  # Comparison should be changed to match # of columns
                 x = 0
                 y += 1
 
@@ -103,9 +103,18 @@ class Window(QWidget):
         self.display.setText(self.displayString)
 
     def calculate(self, equation):
-        equation = self.handleBrackets(equation)
+
+        equation = re.sub(r'√\S+', self.handleSqrt, equation)  # Replaces any sqrts with expected output
+
+        equation = re.sub(r'sin\S+', self.handleSine, equation)  # Replaces any e with expected output
+        equation = re.sub(r'cos\S+', self.handleCosine, equation)  # Replaces any e with expected output
+
+        equation = re.sub(r'\S+e', self.handleE, equation)  # Replaces any e with expected output
+        equation = re.sub(r'π\S+', self.handlePI, equation)  # Replaces any pi with expected output
+
         equation = re.sub(r'\d+!+', self.handleFactorial, equation)  # Replaces any factorials with expected output
-        equation = re.sub(r'sqrt.+', self.handleSqrt, equation)  # Replaces any sqrts with expected output
+
+        equation = self.handleBrackets(equation)  # Replaces any brackets with expected output
         equation = equation.split()
         if len(equation) % 2 == 0 and len(
                 equation) != 1:  # Only allows complete expressions (which have to have an odd amount of terms)
@@ -125,6 +134,8 @@ class Window(QWidget):
 
     # Functions to deal with special characters
     def handleBrackets(self, equation):
+        if equation.count('(') != equation.count(')'):
+            return "Syntax Error"
         opening = equation.find('(')
         closing = equation.find(')')
         while opening != -1 and closing != -1:
@@ -145,7 +156,21 @@ class Window(QWidget):
         return str(total)
 
     def handleSqrt(self, matchObject):
-        return str(math.sqrt(float(self.calculate(matchObject[0][4:]))))
+        return str(math.sqrt(float(self.calculate(matchObject[0][1:]))))
+
+    @staticmethod
+    def handleE(matchObject):
+        return str(math.e * float(matchObject[0][:-1]))
+
+    @staticmethod
+    def handlePI(matchObject):
+        return str(math.pi * float(matchObject[0][:-1]))
+
+    def handleSine(self, matchObject):
+        return str(math.sin(float(self.calculate(matchObject[0][3:])) / (180 / math.pi)))
+
+    def handleCosine(self, matchObject):
+        return str(math.cos(float(self.calculate(matchObject[0][3:])) / (180 / math.pi)))
 
 
 def main():
