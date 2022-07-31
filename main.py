@@ -18,10 +18,10 @@ class Window(QWidget):
         self.buttonGroup = QButtonGroup()
 
         # Visual for GUI, used to create buttons (left to right)
-        self.buttonList = ['7', '8', '9', ' * ', ' ** ', '(', 'e ',
-                           '4', '5', '6', ' / ', ' // ', ')', 'π ',
-                           '1', '2', '3', ' + ', 'del', '!', 'sin(',
-                           ' = ', '0', '.', ' - ', 'ans', '√(', 'cos(']
+        self.buttonList = ['7', '8', '9', ' * ', ' ** ', '(', ')',
+                           '4', '5', '6', ' / ', ' // ', 'e', 'π',
+                           '1', '2', '3', ' + ', 'sin(', 'cos(', 'del',
+                           ' = ', '0', '.', ' - ', '!', '√(', 'ans']
         # Set up lambdas for each operation to be called in line
         self.op = {'+': lambda x, y: x + y,
                    '-': lambda x, y: x - y,
@@ -110,7 +110,7 @@ class Window(QWidget):
         equation = re.sub(r'cos\S+', self.handleCosine, equation)  # Replaces any e with expected output
 
         equation = re.sub(r'\S+e', self.handleE, equation)  # Replaces any e with expected output
-        equation = re.sub(r'π\S+', self.handlePI, equation)  # Replaces any pi with expected output
+        equation = re.sub(r'\S+π', self.handlePI, equation)  # Replaces any pi with expected output
 
         equation = re.sub(r'\d+!+', self.handleFactorial, equation)  # Replaces any factorials with expected output
 
