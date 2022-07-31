@@ -135,7 +135,8 @@ class Window(QWidget):
                                             self.calculate(equation[opening + 1:closing]))
         return equation
 
-    def handleFactorial(self, matchObject):
+    @staticmethod
+    def handleFactorial(matchObject):
         matchObject = matchObject[0]
         numberOfFactorials = matchObject.count('!')
         total = 1
