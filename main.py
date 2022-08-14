@@ -23,6 +23,8 @@ class Window(QWidget):
                            '4', '5', '6', ' / ', 'π', 'e', 'ln(', 'DEL',
                            '1', '2', '3', ' + ', 'sin(', 'cos(', 'tan(', '!',
                            'ANS', '0', '.', ' - ', '(', ')', 'RAND', '=']
+
+        self.columns = len(self.buttonList) // 4
         # Set up lambdas for each operation to be called in line
         self.op = {'+': lambda x, y: x + y,
                    '-': lambda x, y: x - y,
@@ -39,8 +41,8 @@ class Window(QWidget):
 
     def populate(self):
         grid = QGridLayout()
-        grid.addWidget(self.display, 0, 0, 1, 7)  # Last should be changed to match # of columns
-        grid.addWidget(self.line, 5, 0, 1, 6)
+        grid.addWidget(self.display, 0, 0, 1, self.columns)  # Last should be changed to match # of columns
+        grid.addWidget(self.line, 5, 0, 1, self.columns - 1)
         text_button = QPushButton('ENTER', self)
         # Makes button scale vertically
 
@@ -57,7 +59,7 @@ class Window(QWidget):
             grid.addWidget(button, y, x)
 
             x += 1
-            if x >= 7:  # Comparison should be changed to match # of columns
+            if x >= self.columns:  # Comparison should be changed to match # of columns
                 x = 0
                 y += 1
 
