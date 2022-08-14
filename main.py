@@ -48,7 +48,7 @@ class Window(QWidget):
 
         text_button.clicked.connect(self.textUpdateDisplay)
         text_button.setSizePolicy(self.sizePolicy)
-        grid.addWidget(text_button, 5, 6, 1, 1)
+        grid.addWidget(text_button, 5, self.columns - 1, 1, 1)
         x = 0
         y = 1  # Accounts for display
 
