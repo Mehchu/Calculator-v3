@@ -19,10 +19,10 @@ class Window(QWidget):
         self.buttonGroup = QButtonGroup()
 
         # Visual for GUI, used to create buttons (left to right)
-        self.buttonList = ['7', '8', '9', ' * ', ' ** ', '√', 'CLR',
-                           '4', '5', '6', ' / ', 'π', 'e', 'DEL',
-                           '1', '2', '3', ' + ', 'sin(', 'cos(', '!',
-                           'ANS', '0', '.', ' - ', '(', ')', '=']
+        self.buttonList = ['7', '8', '9', ' * ', ' ** ', '√', 'log(', 'CLR',
+                           '4', '5', '6', ' / ', 'π', 'e', 'ln(', 'DEL',
+                           '1', '2', '3', ' + ', 'sin(', 'cos(', 'tan(', '!',
+                           'ANS', '0', '.', ' - ', '(', ')', 'RAND', '=']
         # Set up lambdas for each operation to be called in line
         self.op = {'+': lambda x, y: x + y,
                    '-': lambda x, y: x - y,
@@ -187,6 +187,9 @@ class Window(QWidget):
 
     def handleCosine(self, matchObject):
         return str(math.cos(float(self.calculate(matchObject[0][3:])) / (180 / math.pi)))
+
+    def handleTangent(self, matchObject):
+        return str(math.tan(float(self.calculate(matchObject[0][3:])) / (180 / math.pi)))
 
 
 def main():
