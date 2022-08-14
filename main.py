@@ -87,10 +87,12 @@ class Window(QWidget):
         character = self.buttonList[self.buttonGroup.id(called)]  # Finds which button was pressed
         # Checking for special inputs
         if character == '=':
-            if (answer := self.calculate(self.displayString)) == "Syntax Error":
+            if self.displayString == '':
+                return
+            elif (answer := self.calculate(self.displayString)) == "Syntax Error":
                 self.display.setText(answer)
             else:
-                self.display.setText(self.displayString + ' = ' + answer)
+                self.display.setText(self.displayString + ' = ' + str(answer))
             self.displayString = ''
             return
         elif character == 'ANS':
@@ -121,7 +123,10 @@ class Window(QWidget):
         equation = re.sub(r'ln\S+', self.handleNaturalLogarithm, equation)  # Replaces any ln with expected output
 
         equation = re.sub(r'\S+e', self.handleE, equation)  # Replaces any e with expected output
+        equation = re.sub(r'e', self.handleERaw, equation)  # Replaces any e on its own with expected output
+
         equation = re.sub(r'\S+π', self.handlePI, equation)  # Replaces any pi with expected output
+        equation = re.sub(r'π', self.handlePIRaw, equation)  # Replaces any e on its own with expected output
 
         equation = re.sub(r'\d+!+', self.handleFactorial, equation)  # Replaces any factorials with expected output
 
@@ -152,7 +157,7 @@ class Window(QWidget):
             except ValueError:
                 return "Syntax Error"
         self.prevAns = equation[0]  # Store for answer button
-        return equation[0]
+        return float(equation[0])
 
     # Functions to deal with special characters
     def handleBrackets(self, equation):
@@ -178,30 +183,38 @@ class Window(QWidget):
         return str(total)
 
     def handleSqrt(self, matchObject):
-        return str(math.sqrt(float(self.calculate(matchObject[0][1:]))))
+        return str(math.sqrt(self.calculate(matchObject[0][1:])))
 
     @staticmethod
     def handleE(matchObject):
         return str(math.e * float(matchObject[0][:-1]))
 
     @staticmethod
+    def handleERaw(matchObject):
+        return str(math.e)
+
+    @staticmethod
     def handlePI(matchObject):
         return str(math.pi * float(matchObject[0][:-1]))
 
+    @staticmethod
+    def handlePIRaw(matchObject):
+        return str(math.pi)
+
     def handleSine(self, matchObject):
-        return str(math.sin(float(self.calculate(matchObject[0][3:])) / (180 / math.pi)))
+        return str(math.sin(self.calculate(matchObject[0][3:])) / (180 / math.pi))
 
     def handleCosine(self, matchObject):
-        return str(math.cos(float(self.calculate(matchObject[0][3:])) / (180 / math.pi)))
+        return str(math.cos(self.calculate(matchObject[0][3:])) / (180 / math.pi))
 
     def handleTangent(self, matchObject):
-        return str(math.tan(float(self.calculate(matchObject[0][3:])) / (180 / math.pi)))
+        return str(math.tan(self.calculate(matchObject[0][3:])) / (180 / math.pi))
 
     def handleLogarithm(self, matchObject):
-        return str(math.log10(float(self.calculate(matchObject[0][3:]))))
+        return str(math.log10(self.calculate(matchObject[0][3:])))
 
     def handleNaturalLogarithm(self, matchObject):
-        return str(math.log(float(self.calculate(matchObject[0][2:]))))
+        return str(math.log(self.calculate(matchObject[0][2:])))
 
 
 def main():
