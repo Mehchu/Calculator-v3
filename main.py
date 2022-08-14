@@ -19,10 +19,10 @@ class Window(QWidget):
         self.buttonGroup = QButtonGroup()
 
         # Visual for GUI, used to create buttons (left to right)
-        self.buttonList = ['7', '8', '9', ' * ', ' ** ', '(', ')',
-                           '4', '5', '6', ' / ', ' clr ', 'e', 'π',
-                           '1', '2', '3', ' + ', 'sin(', 'cos(', 'del',
-                           ' = ', '0', '.', ' - ', '!', '√', 'ans']
+        self.buttonList = ['7', '8', '9', ' * ', ' ** ', '√', 'CLR',
+                           '4', '5', '6', ' / ', 'π', 'e', 'DEL',
+                           '1', '2', '3', ' + ', 'sin(', 'cos(', '!',
+                           'ANS', '0', '.', ' - ', '(', ')', '=']
         # Set up lambdas for each operation to be called in line
         self.op = {'+': lambda x, y: x + y,
                    '-': lambda x, y: x - y,
@@ -44,7 +44,7 @@ class Window(QWidget):
         grid = QGridLayout()
         grid.addWidget(self.display, 0, 0, 1, 7)  # Last should be changed to match # of columns
         grid.addWidget(self.line, 5, 0, 1, 6)
-        text_button = QPushButton('Enter', self)
+        text_button = QPushButton('ENTER', self)
         # Makes button scale vertically
 
         text_button.clicked.connect(self.textUpdateDisplay)
@@ -87,19 +87,19 @@ class Window(QWidget):
     def textEntered(self, called):
         character = self.buttonList[self.buttonGroup.id(called)]  # Finds which button was pressed
         # Checking for special inputs
-        if character == ' = ':
+        if character == '=':
             if (answer := self.calculate(self.displayString)) == "Syntax Error":
                 self.display.setText(answer)
             else:
                 self.display.setText(self.displayString + ' = ' + answer)
             self.displayString = ''
             return
-        elif character == 'ans':
+        elif character == 'ANS':
             character = self.prevAns
-        elif character == 'del':
+        elif character == 'DEL':
             character = ''
             self.displayString = self.displayString[:-1]
-        elif character == ' clr ':
+        elif character == ' CLR ':
             character = ''
             self.displayString = ''
         self.displayString += character
