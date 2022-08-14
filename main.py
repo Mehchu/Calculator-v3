@@ -170,7 +170,7 @@ class Window(QWidget):
             closing = equation.find(')')
             if opening != -1 and closing != -1:
                 equation = equation.replace(equation[opening:closing + 1],
-                                            self.calculate(equation[opening + 1:closing]))
+                                            str(self.calculate(equation[opening + 1:closing])))
         return equation
 
     @staticmethod
