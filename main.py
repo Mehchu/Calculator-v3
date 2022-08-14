@@ -31,11 +31,8 @@ class Window(QWidget):
                    '**': lambda x, y: x ** y,
                    '//': lambda x, y: x // y,
                    }
-        # No clue what this does, somehow changes font size
-        self.fontD = self.font()
-        self.fontD.setPointSize(20)
-        self.display.setFont(self.fontD)
 
+        # Set up text input
         self.line = QLineEdit(self)
         self.line.setSizePolicy(self.sizePolicy)
         self.populate()
@@ -99,7 +96,7 @@ class Window(QWidget):
         elif character == 'DEL':
             character = ''
             self.displayString = self.displayString[:-1]
-        elif character == ' CLR ':
+        elif character == 'CLR':
             character = ''
             self.displayString = ''
         self.displayString += character
