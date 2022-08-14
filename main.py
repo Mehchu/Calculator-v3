@@ -1,6 +1,7 @@
-import sys
 import math
 import re
+import sys
+
 from PyQt6.QtWidgets import (QWidget, QPushButton, QApplication,
                              QGridLayout, QButtonGroup, QLabel, QSizePolicy, QLineEdit)
 
@@ -21,7 +22,7 @@ class Window(QWidget):
         self.buttonList = ['7', '8', '9', ' * ', ' ** ', '(', ')',
                            '4', '5', '6', ' / ', ' // ', 'e', 'π',
                            '1', '2', '3', ' + ', 'sin(', 'cos(', 'del',
-                           ' = ', '0', '.', ' - ', '!', '√(', 'ans']
+                           ' = ', '0', '.', ' - ', '!', '√', 'ans']
         # Set up lambdas for each operation to be called in line
         self.op = {'+': lambda x, y: x + y,
                    '-': lambda x, y: x - y,
@@ -43,12 +44,12 @@ class Window(QWidget):
         grid = QGridLayout()
         grid.addWidget(self.display, 0, 0, 1, 7)  # Last should be changed to match # of columns
         grid.addWidget(self.line, 5, 0, 1, 6)
-        textButton = QPushButton('Enter', self)
+        text_button = QPushButton('Enter', self)
         # Makes button scale vertically
 
-        textButton.clicked.connect(self.textUpdateDisplay)
-        textButton.setSizePolicy(self.sizePolicy)
-        grid.addWidget(textButton, 5, 6, 1, 1)
+        text_button.clicked.connect(self.textUpdateDisplay)
+        text_button.setSizePolicy(self.sizePolicy)
+        grid.addWidget(text_button, 5, 6, 1, 1)
         x = 0
         y = 1  # Accounts for display
 
@@ -104,6 +105,8 @@ class Window(QWidget):
 
     def calculate(self, equation):
 
+        equation = self.handleBrackets(equation)  # Replaces any brackets with expected output
+
         equation = re.sub(r'√\S+', self.handleSqrt, equation)  # Replaces any sqrts with expected output
 
         equation = re.sub(r'sin\S+', self.handleSine, equation)  # Replaces any e with expected output
@@ -114,22 +117,36 @@ class Window(QWidget):
 
         equation = re.sub(r'\d+!+', self.handleFactorial, equation)  # Replaces any factorials with expected output
 
-        equation = self.handleBrackets(equation)  # Replaces any brackets with expected output
         equation = equation.split()
         if len(equation) % 2 == 0 and len(
                 equation) != 1:  # Only allows complete expressions (which have to have an odd amount of terms)
             return "Syntax Error"
         while len(equation) >= 3:  # Keeps calculating and replacing until only answer is left
             try:
-                answer = self.op[equation[1]](float(equation[0]), float(equation[2]))
+                # Manual implementation of BIDMAS
+                for index, term in enumerate(equation):
+                    if term == '**' or term == '//':
+                        answer = self.op[equation[index]](float(equation[index - 1]), float(equation[index + 1]))
+                        equation.pop(index - 1)
+                        equation.pop(index - 1)
+                        equation[index - 1] = str(answer)
+                for index, term in enumerate(equation):
+                    if term == '*' or term == '/':
+                        answer = self.op[equation[index]](float(equation[index - 1]), float(equation[index + 1]))
+                        equation.pop(index - 1)
+                        equation.pop(index - 1)
+                        equation[index - 1] = str(answer)
+                for index, term in enumerate(equation):
+                    if term == '+' or term == '-':
+                        answer = self.op[equation[index]](float(equation[index - 1]), float(equation[index + 1]))
+                        equation.pop(index - 1)
+                        equation.pop(index - 1)
+                        equation[index - 1] = str(answer)
             except ZeroDivisionError:
                 return "Undefined"
             except ValueError:
                 return "Syntax Error"
-            equation.pop(0)
-            equation.pop(0)
-            equation[0] = str(answer)
-        self.prevAns = equation[0]  # Store for ans button
+        self.prevAns = equation[0]  # Store for answer button
         return equation[0]
 
     # Functions to deal with special characters
@@ -147,11 +164,11 @@ class Window(QWidget):
         return equation
 
     @staticmethod
-    def handleFactorial(matchObject):
-        matchObject = matchObject[0]
-        numberOfFactorials = matchObject.count('!')
+    def handleFactorial(match_object):
+        match_object = match_object[0]
+        number_of_factorials = match_object.count('!')
         total = 1
-        for number in range(int(matchObject[:-numberOfFactorials]))[::-numberOfFactorials]:
+        for number in range(int(match_object[:-number_of_factorials]))[::-number_of_factorials]:
             total *= number + 1
         return str(total)
 
