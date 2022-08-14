@@ -1,4 +1,5 @@
 import math
+import random
 import re
 import sys
 
@@ -44,7 +45,6 @@ class Window(QWidget):
         grid.addWidget(self.display, 0, 0, 1, self.columns)  # Last should be changed to match # of columns
         grid.addWidget(self.line, 5, 0, 1, self.columns - 1)
         text_button = QPushButton('ENTER', self)
-        # Makes button scale vertically
 
         text_button.clicked.connect(self.textUpdateDisplay)
         text_button.setSizePolicy(self.sizePolicy)
@@ -80,7 +80,7 @@ class Window(QWidget):
         self.show()
 
     def textUpdateDisplay(self):
-        self.displayString = self.line.text()
+        self.displayString += self.line.text()
         self.display.setText(self.displayString)
 
     def textEntered(self, called):
@@ -101,6 +101,9 @@ class Window(QWidget):
         elif character == 'CLR':
             character = ''
             self.displayString = ''
+        elif character == 'RAND':
+            character = ''
+            self.displayString += str(random.random())
         self.displayString += character
         self.display.setText(self.displayString)
 
