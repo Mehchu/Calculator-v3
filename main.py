@@ -108,8 +108,12 @@ class Window(QWidget):
 
         equation = re.sub(r'√\S+', self.handleSqrt, equation)  # Replaces any sqrts with expected output
 
-        equation = re.sub(r'sin\S+', self.handleSine, equation)  # Replaces any e with expected output
-        equation = re.sub(r'cos\S+', self.handleCosine, equation)  # Replaces any e with expected output
+        equation = re.sub(r'sin\S+', self.handleSine, equation)  # Replaces any sin with expected output
+        equation = re.sub(r'cos\S+', self.handleCosine, equation)  # Replaces any cos with expected output
+        equation = re.sub(r'tan\S+', self.handleTangent, equation)  # Replaces any tan with expected output
+
+        equation = re.sub(r'log\S+', self.handleTangent, equation)  # Replaces any log with expected output
+        equation = re.sub(r'ln\S+', self.handleTangent, equation)  # Replaces any ln with expected output
 
         equation = re.sub(r'\S+e', self.handleE, equation)  # Replaces any e with expected output
         equation = re.sub(r'\S+π', self.handlePI, equation)  # Replaces any pi with expected output
@@ -190,6 +194,12 @@ class Window(QWidget):
 
     def handleTangent(self, matchObject):
         return str(math.tan(float(self.calculate(matchObject[0][3:])) / (180 / math.pi)))
+
+    def handleLogarithm(self, matchObject):
+        return str(math.log10(float(self.calculate(matchObject[0][3:]))))
+
+    def handleNaturalLogarithm(self, matchObject):
+        return str(math.log(float(self.calculate(matchObject[0][3:])), math.e))
 
 
 def main():
