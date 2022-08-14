@@ -20,7 +20,7 @@ class Window(QWidget):
 
         # Visual for GUI, used to create buttons (left to right)
         self.buttonList = ['7', '8', '9', ' * ', ' ** ', '(', ')',
-                           '4', '5', '6', ' / ', ' // ', 'e', 'π',
+                           '4', '5', '6', ' / ', ' clr ', 'e', 'π',
                            '1', '2', '3', ' + ', 'sin(', 'cos(', 'del',
                            ' = ', '0', '.', ' - ', '!', '√', 'ans']
         # Set up lambdas for each operation to be called in line
@@ -99,7 +99,9 @@ class Window(QWidget):
         elif character == 'del':
             character = ''
             self.displayString = self.displayString[:-1]
-
+        elif character == ' clr ':
+            character = ''
+            self.displayString = ''
         self.displayString += character
         self.display.setText(self.displayString)
 
